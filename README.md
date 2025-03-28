@@ -1,64 +1,129 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# RemitSo Account Management System
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Overview
+RemitSo is a robust Laravel-based account management system designed for secure and efficient financial tracking. The system provides comprehensive features for user account creation, transaction management, and API-driven interactions.
 
-## About Laravel
+## Prerequisites
+- PHP 7.4 or 8.0
+- Composer
+- MySQL or PostgreSQL
+- Git
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Project Setup
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 1. Clone the Repository
+```bash
+git clone https://github.com/yourusername/remitso-account-management.git
+cd remitso-account-management
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2. Install Dependencies
+```bash
+composer install
+```
 
-## Learning Laravel
+### 3. Environment Configuration
+1. Copy `.env.example` to `.env`
+2. Configure database settings in `.env`
+```ini
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=remitso_db
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 4. Generate Application Key
+```bash
+php artisan key:generate
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 5. Database Setup
+```bash
+# Create database
+mysql -u your_username -p
+CREATE DATABASE remitso_db;
+exit;
 
-## Laravel Sponsors
+# Run migrations
+php artisan migrate
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Authentication
 
-### Premium Partners
+### User Registration and Login
+- `POST /register`: Create a new user account
+  - Required: `name`, `email`, `password`
+- `POST /login`: Authenticate user and obtain Sanctum token
+  - Required: `email`, `password`
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+### Authentication Workflow
+1. Register a user via `/register`
+2. Login via `/login` to obtain authentication token
+3. Include token in subsequent API requests via Bearer authentication
 
-## Contributing
+## API Endpoints
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Authenticated Routes (Requires Sanctum Token)
 
-## Code of Conduct
+#### Accounts Management
+- `POST /accounts`: Create a new account
+  - Required: `account_name`, `account_type` (Personal/Business), `currency` (USD/EUR/GBP)
+- `GET /accounts/{account_number}`: Retrieve specific account details
+- `PUT /accounts/{account_number}`: Update account information
+- `DELETE /accounts/{account_number}`: Close/delete account
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+#### Transactions
+- `POST /transactions`: Record a new transaction
+  - Required: `account_id`, `type` (Credit/Debit), `amount`
+  - Optional: `description`
+- `GET /transactions`: Retrieve transactions
+  - Optional filters: `account_id`, `from` date, `to` date
 
-## Security Vulnerabilities
+## Testing
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### Test Coverage
 
-## License
+### Running Tests
+```bash
+# Run all tests
+php artisan test
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+### Performance Metrics
+   PASS  Tests\Unit\AccountTest
+  ✓ example
+
+   PASS  Tests\Unit\ExampleTest
+  ✓ example
+
+   PASS  Tests\Unit\LuhnHelperTest
+  ✓ it generates a valid luhn compliant account number
+  ✓ it detects an invalid luhn number
+
+   PASS  Tests\Feature\AccountTest
+  ✓ it creates an account successfully
+
+   PASS  Tests\Feature\TransactionTest
+  ✓ it creates a transaction successfully
+  ✓ it fails transaction due to insufficient balance
+  ✓ it processes a deposit successfully
+
+  Tests:  8 passed
+  Time:   0.32s
+
+## Key Features
+- UUID-based primary keys
+- Luhn algorithm for account number generation
+- Sanctum API authentication
+- Soft delete support
+- Transaction validation
+- Overdraft prevention
+
+## Security Considerations
+- Passwords are hashed
+- All account and transaction routes require authentication
+- Transactions are processed within database transactions
+- Input validation for all endpoints
